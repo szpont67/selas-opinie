@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opinia - Salon Optyczny SELAS Wrocław</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col justify-between p-4 md:p-6">
+
+    <div class="max-w-md mx-auto w-full">
+        <!-- Brand Header -->
+        <header class="bg-white rounded-2xl p-6 shadow-sm mb-6 text-center border border-slate-200">
+            <div id="logo-container" class="w-20 h-20 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center text-white text-3xl font-bold shadow-md shadow-blue-200 overflow-hidden mb-3 border border-slate-100">
+                <span id="logo-placeholder">S</span>
+                <img id="custom-logo" src="" alt="Logo SELAS" class="hidden w-full h-full object-contain p-2 bg-white">
+            </div>
+            <h1 class="text-xl font-bold text-slate-900">Salon Optyczny SELAS</h1>
+            <p class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i> Pasaż Grunwaldzki (Poziom -1), Wrocław</p>
+        </header>
+
+        <!-- Main Feedback Container -->
+        <main class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+            <div class="text-center mb-6">
+                <h2 class="text-lg font-bold text-slate-900 mb-1">Jak oceniasz dzisiejszą wizytę?</h2>
+                <p class="text-xs text-slate-500">Twoja opinia pomaga nam doskonalić nasze usługi optyczne.</p>
+            </div>
+
+            <!-- Interactive Star Selection -->
+            <div class="flex justify-center gap-2 mb-6">
+                <button onclick="setRating(1)" class="star-btn text-4xl text-slate-300 hover:text-amber-400 transition-colors" data-star="1">★</button>
+                <button onclick="setRating(2)" class="star-btn text-4xl text-slate-300 hover:text-amber-400 transition-colors" data-star="2">★</button>
+                <button onclick="setRating(3)" class="star-btn text-4xl text-slate-300 hover:text-amber-400 transition-colors" data-star="3">★</button>
+                <button onclick="setRating(4)" class="star-btn text-4xl text-slate-300 hover:text-amber-400 transition-colors" data-star="4">★</button>
+                <button onclick="setRating(5)" class="star-btn text-4xl text-slate-300 hover:text-amber-400 transition-colors" data-star="5">★</button>
+            </div>
+
+            <!-- Positive Flow (4-5 Stars) -->
+            <div id="flow-positive" class="hidden bg-blue-50/50 p-5 rounded-xl border border-blue-100">
+                <p class="text-xs font-semibold text-blue-900 mb-2 text-center">Dziękujemy! Zaznacz, co podobało Ci się najbardziej:</p>
+                
+                <div class="flex flex-wrap gap-1.5 mb-4 justify-center">
+                    <button onclick="toggleTag(this)" class="tag-btn bg-white border border-slate-200 px-3 py-1 rounded-full text-xs font-medium hover:border-blue-500">Badanie wzroku</button>
+                    <button onclick="toggleTag(this)" class="tag-btn bg-white border border-slate-200 px-3 py-1 rounded-full text-xs font-medium hover:border-blue-500">Dobór oprawek</button>
+                    <button onclick="toggleTag(this)" class="tag-btn bg-white border border-slate-200 px-3 py-1 rounded-full text-xs font-medium hover:border-blue-500">Okulary progresywne</button>
+                    <button onclick="toggleTag(this)" class="tag-btn bg-white border border-slate-200 px-3 py-1 rounded-full text-xs font-medium hover:border-blue-500">Wideocentracja</button>
+                    <button onclick="toggleTag(this)" class="tag-btn bg-white border border-slate-200 px-3 py-1 rounded-full text-xs font-medium hover:border-blue-500">Miła obsługa</button>
+                </div>
+
+                <div class="mb-4">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-[11px] font-semibold text-slate-600">Gotowy tekst opinii (AI):</label>
+                        <button onclick="generateRandomReview()" class="text-[11px] text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1">
+                            <i class="fa-solid fa-arrows-rotate"></i> Losuj inną
+                        </button>
+                    </div>
+                    <textarea id="ai-review-text" class="w-full p-3 rounded-xl border border-slate-200 text-xs bg-white focus:outline-none focus:border-blue-400" rows="4" readonly></textarea>
+                </div>
+
+                <button onclick="publishToGoogle()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-brands fa-google"></i> Otwórz i opublikuj w Google Maps
+                </button>
+                <p class="text-[10px] text-center text-slate-400 mt-2"><i class="fa-solid fa-lock mr-1"></i> Tekst zostanie automatycznie skopiowany do schowka.</p>
+            </div>
+
+            <!-- Negative Flow (1-3 Stars) -->
+            <div id="flow-negative" class="hidden bg-amber-50/50 p-5 rounded-xl border border-amber-100">
+                <h3 class="font-semibold text-amber-900 text-xs mb-1 text-center">Przepraszamy za wszelkie niedogodności</h3>
+                <p class="text-[11px] text-slate-600 mb-3 text-center">Twoje uwagi trafią bezpośrednio do kierownictwa salonu w Pasażu Grunwaldzkim:</p>
+                <textarea id="private-feedback" class="w-full p-3 rounded-xl border border-slate-200 text-xs mb-3 bg-white" rows="3" placeholder="Co możemy poprawić przy kolejnej wizycie?"></textarea>
+                <button onclick="submitPrivateFeedback()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition-all">
+                    Wyślij wiadomość do menedżera
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer link to Admin -->
+    <footer class="text-center text-[11px] text-slate-400 mt-6">
+        &copy; Salon Optyczny SELAS Wrocław | <a href="admin.html" class="underline hover:text-slate-600">Panel Zarządzania</a>
+    </footer>
+
+    <script>
+        let currentRating = 0;
+
+        const intros = [
+            "Bardzo udana wizyta w salonie SELAS w Pasażu Grunwaldzkim.",
+            "Serdecznie polecam Salon Optyczny SELAS we Wrocławiu!",
+            "Jestem zachwycony poziomem obsługi w SELAS Pasaż Grunwaldzki.",
+            "Najlepszy salon optyczny we Wrocławiu, odwiedziłem SELAS wczoraj."
+        ];
+
+        const details = [
+            "Badanie ostrości wzroku zostało przeprowadzone niezwykle skrupulatnie.",
+            "Stylista pomógł mi dobrać idealne oprawki dopasowane do mojej twarzy.",
+            "Proces wyznaczenia środka optycznego (wideocentracja) odbył się bardzo sprawnie.",
+            "Panuje tu świetna i ciepła atmosfera, a eksperci znają się na rzeczy."
+        ];
+
+        const conclusions = [
+            "Na pewno wrócę przy okazji kolejnych badań!",
+            "Okulary są idealnie dobrane i niezwykle wygodne.",
+            "Gorąco polecam każdemu, kto ceni jakość i komfort widzenia.",
+            "Zdecydowanie 5/5 stars za fachowe podejście!"
+        ];
+
+        function getRandomItem(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function generateRandomReview() {
+            const selectedTags = Array.from(document.querySelectorAll('.tag-btn.bg-blue-600')).map(b => b.innerText);
+            let customTagSentence = selectedTags.length > 0 ? ` Szczególnie doceniam: ${selectedTags.join(', ')}.` : "";
+            const text = `${getRandomItem(intros)} ${getRandomItem(details)}${customTagSentence} ${getRandomItem(conclusions)}`;
+            document.getElementById('ai-review-text').value = text;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLogo = localStorage.getItem('selas_custom_logo');
+            if (savedLogo) {
+                document.getElementById('custom-logo').src = savedLogo;
+                document.getElementById('custom-logo').classList.remove('hidden');
+                document.getElementById('logo-placeholder').classList.add('hidden');
+            }
+        });
+
+        function setRating(rating) {
+            currentRating = rating;
+            document.querySelectorAll('.star-btn').forEach((star, index) => {
+                star.classList.toggle('text-amber-400', index < rating);
+                star.classList.toggle('text-slate-300', index >= rating);
+            });
+
+            document.getElementById('flow-positive').classList.add('hidden');
+            document.getElementById('flow-negative').classList.add('hidden');
+
+            if (rating >= 4) {
+                document.getElementById('flow-positive').classList.remove('hidden');
+                generateRandomReview();
+            } else if (rating > 0) {
+                document.getElementById('flow-negative').classList.remove('hidden');
+            }
+        }
+
+        function toggleTag(btn) {
+            btn.classList.toggle('bg-blue-600');
+            btn.classList.toggle('text-white');
+            btn.classList.toggle('bg-white');
+            generateRandomReview();
+        }
+
+        function publishToGoogle() {
+            const text = document.getElementById('ai-review-text').value;
+            navigator.clipboard.writeText(text);
+
+            // Zapisz statystykę pozytywnej opinii w pamięci
+            let stats = JSON.parse(localStorage.getItem('selas_stats') || '{"pos":0,"neg":0}');
+            stats.pos++;
+            localStorage.setItem('selas_stats', JSON.stringify(stats));
+
+            alert('Tekst opinii został skopiowany do schowka! Następuje przekierowanie do Wizytówki Google Salonu SELAS.');
+            window.open('https://maps.google.com/?q=Salon+Optyczny+SELAS+Pasaż+Grunwaldzki+Wrocław', '_blank');
+        }
+
+        function submitPrivateFeedback() {
+            const val = document.getElementById('private-feedback').value.trim();
+            if (!val) {
+                alert('Proszę wpisać treść uwagi przed wysłaniem.');
+                return;
+            }
+
+            // Zapisz uwagę menedżerowi w pamięci
+            let feedbackList = JSON.parse(localStorage.getItem('selas_private_feedback') || '[]');
+            feedbackList.push({ date: new Date().toLocaleString(), rating: currentRating, text: val });
+            localStorage.setItem('selas_private_feedback', JSON.stringify(feedbackList));
+
+            let stats = JSON.parse(localStorage.getItem('selas_stats') || '{"pos":0,"neg":0}');
+            stats.neg++;
+            localStorage.setItem('selas_stats', JSON.stringify(stats));
+
+            alert('Dziękujemy! Wiadomość została przekazana bezpośrednio do kierownictwa salonu.');
+            document.getElementById('private-feedback').value = '';
+            setRating(0);
+        }
+    </script>
+</body>
+</html>

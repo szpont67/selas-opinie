@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Menadżera - SELAS Pasaż Grunwaldzki</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+</head>
+<body class="bg-slate-900 font-sans text-slate-100 min-h-screen p-4 md:p-8">
+
+    <!-- Auth Protection Screen -->
+    <div id="auth-screen" class="max-w-sm mx-auto my-20 bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-2xl text-center">
+        <div class="w-12 h-12 bg-blue-600 rounded-xl mx-auto flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-lock text-white"></i></div>
+        <h2 class="font-bold text-lg mb-1">Panel Menadżera SELAS</h2>
+        <p class="text-xs text-slate-400 mb-4">Wprowadź PIN dostępowy (Domyślny: <span class="text-blue-400 font-mono">1234</span>)</p>
+        <input type="password" id="pin-input" placeholder="Wprowadź PIN" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-center text-lg tracking-widest text-white mb-4 focus:outline-none focus:border-blue-500">
+        <button onclick="login()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-xl text-sm transition-all">Zaloguj się</button>
+    </div>
+
+    <!-- Admin Panel Interface -->
+    <div id="admin-panel" class="hidden max-w-5xl mx-auto space-y-6">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-center bg-slate-800 p-6 rounded-2xl border border-slate-700 gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-xl">S</div>
+                <div>
+                    <h1 class="text-xl font-bold">Pulpit Zarządzania SELAS</h1>
+                    <p class="text-xs text-slate-400">Pasaż Grunwaldzki Wrocław | Panel Ochrony Wizytówki Google</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="index.html" target="_blank" class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5"><i class="fa-solid fa-arrow-up-right-from-square"></i> Otwórz widok klienta</a>
+                <button onclick="logout()" class="bg-red-900/40 hover:bg-red-900/60 text-red-300 px-3 py-2 rounded-xl text-xs font-semibold transition-all">Wyloguj</button>
+            </div>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700">
+                <div class="text-xs text-slate-400 font-medium">Przekierowania do Google Maps (4-5★)</div>
+                <div id="stat-pos" class="text-3xl font-bold text-emerald-400 mt-2">0</div>
+            </div>
+            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700">
+                <div class="text-xs text-slate-400 font-medium">Zatrzymane uwagi prywatne (1-3★)</div>
+                <div id="stat-neg" class="text-3xl font-bold text-amber-400 mt-2">0</div>
+            </div>
+            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700">
+                <div class="text-xs text-slate-400 font-medium">Obecna ocena profilu SELAS</div>
+                <div class="text-3xl font-bold text-blue-400 mt-2">4.5 ★ <span class="text-xs text-slate-400 font-normal">(114 opinii)</span></div>
+            </div>
+        </div>
+
+        <!-- Section: QR Code Generator & Logo -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- QR Generator -->
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+                <h3 class="font-bold text-sm mb-3 flex items-center gap-2"><i class="fa-solid fa-qrcode text-blue-400"></i> Generator Kodu QR do Salonu</h3>
+                <p class="text-xs text-slate-400 mb-4">Wklej bezpośredni link do opublikowanego pliku `index.html`, aby wygenerować kod QR na ladę w Pasażu Grunwaldzkim:</p>
+                <input type="url" id="qr-url-input" placeholder="https://twoja-nazwa.github.io/selas-opinie/" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white mb-3 focus:outline-none focus:border-blue-500">
+                <button onclick="generateQR()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded-xl text-xs mb-4">Wygeneruj QR Code</button>
+                <div id="qr-output" class="flex justify-center bg-white p-4 rounded-xl hidden"></div>
+            </div>
+
+            <!-- Logo Manager -->
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+                <h3 class="font-bold text-sm mb-3 flex items-center gap-2"><i class="fa-solid fa-image text-blue-400"></i> Wgraj Logo Salonu SELAS</h3>
+                <p class="text-xs text-slate-400 mb-4">Wgraj plik graficzny z logo, które pojawi się w nagłówku aplikacji u klientów:</p>
+                <input type="file" id="logo-file" accept="image/*" onchange="uploadLogo(event)" class="w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer mb-4">
+                <button onclick="clearLogo()" class="text-xs text-slate-400 hover:text-red-400 transition-colors"><i class="fa-solid fa-trash mr-1"></i> Usuń i przywróć domyślne logo</button>
+            </div>
+        </div>
+
+        <!-- Section: Private Feedback Logs -->
+        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-sm flex items-center gap-2"><i class="fa-solid fa-inbox text-amber-400"></i> Otrzymane uwagi wewnętrzne (Ochrona profilu)</h3>
+                <button onclick="clearFeedbackLogs()" class="text-xs text-slate-400 hover:text-red-400"><i class="fa-solid fa-trash mr-1"></i> Wyczyść historię</button>
+            </div>
+            <div id="feedback-logs" class="space-y-3 text-xs">
+                <!-- Logs rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function login() {
+            const pin = document.getElementById('pin-input').value;
+            if (pin === '1234') {
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                loadDashboardData();
+            } else {
+                alert('Błędny PIN!');
+            }
+        }
+
+        function logout() {
+            document.getElementById('admin-panel').classList.add('hidden');
+            document.getElementById('auth-screen').classList.remove('hidden');
+            document.getElementById('pin-input').value = '';
+        }
+
+        function loadDashboardData() {
+            const stats = JSON.parse(localStorage.getItem('selas_stats') || '{"pos":0,"neg":0}');
+            document.getElementById('stat-pos').innerText = stats.pos;
+            document.getElementById('stat-neg').innerText = stats.neg;
+
+            const logs = JSON.parse(localStorage.getItem('selas_private_feedback') || '[]');
+            const container = document.getElementById('feedback-logs');
+            
+            if (logs.length === 0) {
+                container.innerHTML = `<div class="text-slate-500 italic py-4 text-center">Brak prywatnych uwag od klientów. Wszystkie oceny trafiają do Google Maps.</div>`;
+            } else {
+                container.innerHTML = logs.map(l => `
+                    <div class="p-3 bg-slate-900 rounded-xl border border-slate-700">
+                        <div class="flex justify-between text-slate-400 mb-1">
+                            <span><i class="fa-solid fa-star text-amber-400"></i> Ocena: ${l.rating}★</span>
+                            <span>${l.date}</span>
+                        </div>
+                        <div class="text-slate-200">${l.text}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function generateQR() {
+            const url = document.getElementById('qr-url-input').value.trim();
+            if (!url) { alert('Proszę wprowadzić prawidłowy URL.'); return; }
+            const out = document.getElementById('qr-output');
+            out.innerHTML = '';
+            out.classList.remove('hidden');
+            new QRCode(out, { text: url, width: 160, height: 160 });
+        }
+
+        function uploadLogo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    localStorage.setItem('selas_custom_logo', e.target.result);
+                    alert('Logo zostało pomyślnie zaktualizowane w aplikacji klienta!');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function clearLogo() {
+            localStorage.removeItem('selas_custom_logo');
+            alert('Logo zostało przywrócone do wersji domyślnej.');
+        }
+
+        function clearFeedbackLogs() {
+            if (confirm('Czy na pewno chcesz usunąć historię uwag?')) {
+                localStorage.removeItem('selas_private_feedback');
+                loadDashboardData();
+            }
+        }
+    </script>
+</body>
+</html>
